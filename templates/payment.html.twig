@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <h1>Testing Cards</h1>
+    <p>4242424242424242	3D Secure authentication not supported, but will charge successfully</p>
+    <p>4000000000003055	3D Secure authentication supported, will go through the full 3D Secure flow</p>
+    <p>4000000000003063	3D Secure authentication required, charge will be declined without it</p>
+
+    <input type="button" id="pay" value="Pay"/>
+
+    <script>
+        var stripe = Stripe('{{ stripe_pk }}');
+
+        $(document).ready(function () {
+
+            $('#pay').on('click', function () {
+
+                stripe.redirectToCheckout({
+                    sessionId: '{{CHECKOUT_SESSION_ID}}'
+                }).then(function (result) {
+                });
+
+            });
+        });
+    </script>
+{% endblock %}

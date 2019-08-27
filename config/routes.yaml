@@ -1,0 +1,4 @@
+payment:
+    resource: '../src/Controller/'
+    type: annotation
+    prefix: '/'

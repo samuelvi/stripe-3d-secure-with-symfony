@@ -1,0 +1,53 @@
+
+Create a .env file in the root of the project and add your Stripe Public and Secret Keys:
+
+STRIPE_SK=''
+STRIPE_PK=''
+
+
+Run the site with a php local server or if you are prefer apache with custom local/intranet domain then:
+
+1) copy and enable stripe_3d_secure.intranet.conf into /etc/apache2/sites-available
+2) enable site by running a2ensite
+3) reload apache.
+4) add to your host file an entry like: 127.0.0.1  dev.stripe3dsecure.intranet
+5) Visit the page: http://dev.stripe3dsecure.intranet
+
+Apache VirtualHost file:
+
+<VirtualHost *:80>
+    ServerName stripe3dsecure.intranet
+    ServerAlias *.stripe3dsecure.intranet
+
+    DocumentRoot /var/www/stripe_3d_secure/public
+    DirectoryIndex index.php
+
+
+     <Directory /var/www/stripe_3d_secure/public>
+
+        <IfModule mod_rewrite.c>
+            Options -MultiViews
+            RewriteEngine On
+
+            RewriteCond %{REQUEST_URI} !\.(gif|jpe?g|png|svg|css|js|ico)$ [NC,OR]
+            RewriteCond %{REQUEST_URI} .*/uploads/.*\.(gif|jpe?g|png)$ [NC]
+            RewriteCond %{REQUEST_FILENAME} !-f
+
+            RewriteRule ^(.*)$ index.php [QSA,L]
+        </IfModule>
+
+    </Directory>
+
+    LogLevel warn
+
+    ErrorLog /var/www/stripe_3d_secure/var/log/error.log
+    CustomLog /var/www/stripe_3d_secure/var/log/access.log combined
+
+</VirtualHost>
+
+
+Test Cards:
+
+- 4242424242424242	3D Secure authentication not supported, but will charge successfully
+- 4000000000003055	3D Secure authentication supported, will go through the full 3D Secure flow
+- 4000000000003063	3D Secure authentication required, charge will be declined without it
